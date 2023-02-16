@@ -1,0 +1,27 @@
+.circle {
+    padding: 15px;
+    border-radius: 20px;
+}
+
+input[name=color]{
+    position: absolute;
+    width: 0%;
+    opacity: 0;
+}
+#groupColor label:hover {
+    cursor: pointer;
+}
+
+#groupColor input[type=radio]:checked+label {
+    border: 2px solid #ccc;
+}
+
+label.error {
+    color: red;
+    font-size: small;
+}
+
+#color-error{
+    display: block;
+    margin-top: -10px;
+}

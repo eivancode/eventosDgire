@@ -1,0 +1,49 @@
+.banner {
+    background-color: #191970;
+    text-align: center;
+    align-items: center;
+}
+
+.bannerEventos {
+    background-color: goldenrod;
+    text-align: center;
+    align-items: center;
+}
+
+.color {
+    color: midnightblue;
+}
+
+#img-unam {
+    max-width: 70px;
+    max-height: 50px;
+}
+
+#img-dgire {
+    max-width: 70px;
+    max-height: 50px;
+}
+
+.img-login {
+    text-align: center;
+    font-size: 50px;
+}
+
+.btn-acceder {
+    width: 100%;
+    height: 40px;
+    background-color: #191970;
+    color: white;
+}
+
+.btn-acceder:hover {
+    background-color: #191970;
+}
+
+.btn-acceder:active {
+    background-color: #495057 !important;
+}
+
+.notFound {
+    text-align: center;
+}
