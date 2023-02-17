@@ -14,7 +14,7 @@ function login() {
     var password = $('#password').val();
 
     $.ajax({
-        url: 'http://localhost/eventosDgire/usuario/login',
+        url: 'http://localhost/eventosDgire/usuario/autenticar',
         type: 'POST',
         data: {
             usuario: usuario,
