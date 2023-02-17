@@ -4,7 +4,6 @@ require_once 'models/Usuario.php';
 
 class UsuarioController
 {
-
     private $usuarios;
 
     public function __construct()
@@ -14,34 +13,13 @@ class UsuarioController
 
     public function index()
     {
-        $id = $_SESSION['idUsuario'];
         $roles = $this->usuarios->getRoles();
-        $usuario = $this->usuarios->getSession($id);
 
         require_once 'views/usuarios/index.php';
     }
 
     public function login()
     {
-
-        if (isset($_POST) and !empty($_POST)) {
-            $usuario = !empty($_POST['usuario']) ? $_POST['usuario'] : false;
-            $password = !empty($_POST['password']) ? $_POST['password'] : false;
-            $usuario = $this->usuarios->login($usuario, $password);
-
-            if ($usuario && $password) {
-                $_SESSION['idUsuario'] = $usuario['idUsuario']; //Obtener los datos del usuario solicitante
-                if ($usuario['idRol'] == '1') {
-                    $_SESSION['admin'] = $usuario;
-                } elseif ($usuario['idRol'] == '2') {
-                    $_SESSION['user'] = $usuario;
-                } else {
-                    http_response_code(400);
-                }
-            } else {
-                http_response_code(400);
-            }
-        }
         require_once 'views/usuarios/login.php';
     }
 
@@ -51,20 +29,35 @@ class UsuarioController
         header("Location:" . base_url);
     }
 
-    public function guardar()
+    public function autenticar()
     {
-        /* if (!empty($_POST['nombre']) && !empty($_POST['email']) && !empty($_POST['password']) && !empty($_POST['rol']) && is_numeric($_POST['rol'])) {
-            $this->usuarios->setNombre($_POST['nombre']);
-            $this->usuarios->setEmail($_POST['email']);
-            $this->usuarios->setPassword(password_hash($_POST['password'], PASSWORD_BCRYPT));
-            $this->usuarios->setRol($_POST['rol']);
-            $this->usuarios->setFcCrea(date('Y-m-d H:i:s'));
-            $this->usuarios->insert();
+        $nombre = isset($_POST['usuario']) && !empty($_POST['usuario']) ? $_POST['usuario'] : false;
+        $password = isset($_POST['password']) && !empty($_POST['password']) ? $_POST['password'] : false;
+
+        if ($nombre && $password) {
+            $usuario = $this->usuarios->auth($nombre, $password);
+
+            if ($usuario && password_verify($password, $usuario['password'])) {
+                $_SESSION['idUsuario'] = $usuario['idUsuario']; //Obtener los datos del usuario solicitante
+                $_SESSION['idRol'] = $usuario['idRol'];
+
+                if ($usuario['idRol'] == '1') {
+                    $_SESSION['admin'] = $usuario['email'];
+                } elseif ($usuario['idRol'] == '2') {
+                    $_SESSION['user'] = $usuario['email'];
+                }
+            } else {
+                http_response_code(400);
+                echo  json_encode(array('message' => "Usuario o contraseña incorrecto"));
+            }
         } else {
             http_response_code(400);
             echo  json_encode(array('message' => "Faltan campos por completar"));
-        } */
+        }
+    }
 
+    public function guardar()
+    {
         $nombre = !empty($_POST['nombre']) ? $_POST['nombre'] : false;
         $email = !empty($_POST['email']) ? $_POST['email'] : false;
         $password = !empty($_POST['password']) ? $_POST['password'] : false;
@@ -98,8 +91,6 @@ class UsuarioController
 
     public function actualizar()
     {
-        //$idRol = $this->usuarios->getSession($id); // Variable de prueba 
-
         $id = $this->usuarios->setIdUsuario($_GET['id']);
         $nombre = !empty($_POST['nombre']) ? $_POST['nombre'] : false;
         $email = !empty($_POST['email']) ? $_POST['email'] : false;
@@ -116,22 +107,6 @@ class UsuarioController
             http_response_code(400);
             echo  json_encode(array('message' => "Faltan campos por completar"));
         }
-        /*      if (!empty($_POST['nombre']) && !empty($_POST['email']) && !empty($_POST['rol'])) {
-            $this->usuarios->setNombre($_POST['nombre']);
-            $this->usuarios->setEmail($_POST['email']);
-            $this->usuarios->setRol($_POST['rol']);
-            $this->usuarios->setFcActualiza(date('Y-m-d H:i:s'));
-            $this->usuarios->update($id);
-
-            if ($idRol['idRol'] == 2) {
-
-
-                session_destroy();
-                header("Location:" . base_url);
-            }
-        } else {
-            http_response_code(404);
-        } */
     }
 
     public function borrar()
