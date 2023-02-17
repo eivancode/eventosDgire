@@ -47,3 +47,8 @@
 .notFound {
     text-align: center;
 }
+
+.error{
+    font-family: sans-serif;
+    color: red;
+}
