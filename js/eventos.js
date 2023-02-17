@@ -1,6 +1,7 @@
-const BASE_URL = "http://localhost/eventosDgire/";
-
 document.addEventListener('DOMContentLoaded', function () {
+    const BASE_URL = "http://localhost/eventosDgire/";
+    var today = new Date(); //OBTENER LA FECHA ACTUAL Y LANZAR ERROR DE FECHAS PASADAS
+    today = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -11,17 +12,17 @@ document.addEventListener('DOMContentLoaded', function () {
         headerToolbar: {
             right: 'dayGridMonth timeGridWeek timeGridDay listWeek'
         },
-        eventTimeFormat: {
+        /* eventTimeFormat: {
             hour: '2-digit',
             minute: '2-digit',
             hour12: false
-        },
+        }, */
         slotMinTime: '08:00:00',
         slotMaxTime: '20:00:01',
         allDaySlot: false,
         displayEventEnd: true,
 
-        events: 'listar',
+        events: BASE_URL + 'evento/listar',
 
         eventDataTransform: function (event) {
             event.title = event.titulo;
@@ -32,18 +33,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
             return event;
         },
-        dateClick: function(info) {
+
+        dateClick: function (info) {
+
             info.date = new Date(info.date).toISOString().slice(0, 10);
-            $('#eventModal').modal('show');
-            $('#fcInicio, #fcFin').attr('value',  info.date);
-          },
-        
+
+            if (info.date >= today) {
+                $('#eventModal').modal('show');
+                $('#fcInicio, #fcFin').attr('value', info.date);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No es posible agendar un evento en fechas pasadas',
+                })
+            }
+        },
+
         select: function (selectInfo) {
             //Código de prueba 
-           
+
             //
-            var today = new Date(); //OBTENER LA FECHA ACTUAL Y LANZAR ERROR DE FECHAS PASADAS
-            today = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);  
+
             selectInfo.start = new Date(selectInfo.start).toISOString().slice(0, 10);
             selectInfo.end = new Date(selectInfo.end - 60 * 60 * 24 * 1000).toISOString().slice(0, 10); //RESTAR UN DÍA A LA FECHA FIN QUE ARROJA FULLCALENDAR 
 
