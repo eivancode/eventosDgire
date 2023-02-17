@@ -100,7 +100,7 @@ class Usuario extends Conexion
 		return $this;
 	}
 
-	public function login($nombre, $password)
+	public function auth($nombre, $password)
 	{
 		try {
 			$query = "SELECT * FROM usuarios WHERE nombre = ?";
@@ -109,11 +109,7 @@ class Usuario extends Conexion
 			$stmt->execute();
 			$usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-			if (password_verify($password, $usuario['password'])) {
-				return $usuario;
-			} else {
-				return false;
-			}
+			return $usuario;
 		} catch (Exception $e) {
 			die($e->getMessage());
 		}
@@ -156,25 +152,8 @@ class Usuario extends Conexion
 		}
 	}
 
-	public function getSession($id)
-	{
-		try {
-
-			$query = "SELECT * FROM usuarios WHERE idUsuario = ?";
-			$stmt = $this->db->prepare($query);
-			$stmt->bindParam(1, $id, PDO::PARAM_INT);
-			$stmt->execute();
-			$usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-
-			return $usuario;
-		} catch (Exception $e) {
-			die($e->getMessage());
-		}
-	}
-
 	public function insert()
 	{
-
 		try {
 			$query = "INSERT INTO usuarios(nombre, email, password, idRol, fcCrea) VALUES (?, ?, ?, ?, ?)";
 			$stmt = $this->db->prepare($query);
@@ -191,7 +170,6 @@ class Usuario extends Conexion
 
 	public function edit($idUsuario)
 	{
-
 		try {
 			$query = "SELECT idUsuario, nombre, email, idRol FROM usuarios WHERE idUsuario = ?";
 			$stmt = $this->db->prepare($query);
@@ -203,6 +181,7 @@ class Usuario extends Conexion
 			}
 
 			return $datos;
+
 		} catch (Exception $e) {
 			die($e->getMessage());
 		}
