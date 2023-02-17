@@ -28,6 +28,8 @@
                         </div>
                         <button type="button" class="btn-acceder" id="btnLogin">Ingresar</button>
                     </form>
+                    <span class="error"></span>
+
                 </div>
             </div>
         </div>
@@ -36,3 +38,4 @@
 </div>
 
 <?php require_once 'views/layout/footer.php'; ?>
+<script src="<?= base_url ?>js/login.js"></script>
