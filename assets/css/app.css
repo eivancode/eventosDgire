@@ -48,7 +48,8 @@
     text-align: center;
 }
 
-.error{
-    font-family: sans-serif;
+.form-error{
+    font-size: small;
+    font-weight: 700;
     color: red;
 }
