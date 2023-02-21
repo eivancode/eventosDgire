@@ -9,30 +9,51 @@ $("#user, #password").keypress(function (e) {
     }
 });
 
+function loginValidate() {
+
+    if ($('#user').val() == "" && $('#password').val() == "") {
+        $('.error').text('Ingrese usuario y contraseña');
+        return false;
+
+    } else if ($('#user').val() == "") {
+        $('.error').text('Ingrese un usuario');
+        return false;
+
+    } else if ($('#password').val() == "") {
+        $('.error').text('Ingrese una contraseña');
+        return false;
+    } else {
+        return true;
+    }
+}
+
 function login() {
-    var usuario = $('#user').val();
-    var password = $('#password').val();
 
-    $.ajax({
-        url: 'http://localhost/eventosDgire/usuario/autenticar',
-        type: 'POST',
-        data: {
-            usuario: usuario,
-            password: password
-        },
+    if (loginValidate()) {
+        var usuario = $('#user').val();
+        var password = $('#password').val();
 
-        success: function () {
+        $.ajax({
+            url: 'http://localhost/eventosDgire/usuario/autenticar',
+            type: 'POST',
+            data: {
+                usuario: usuario,
+                password: password
+            },
 
-            $('.error').hide();
-            window.location.href = 'http://localhost/eventosDgire/evento/index';
+            success: function () {
 
-        },
-        
-        error: function () {
+                $('.error').hide();
+                window.location.href = 'http://localhost/eventosDgire/evento/index';
 
-            $('.error').text('Usuario o contraseña incorrectos');
-        }
-    })
+            },
+
+            error: function () {
+                $('.error').text('Usuario o contraseña incorrectos');
+            }
+        })
+    }
+
 }
 
 
