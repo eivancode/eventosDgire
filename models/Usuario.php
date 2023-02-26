@@ -133,6 +133,41 @@ class Usuario extends Conexion
 		}
 	}
 
+	public function emailExists()
+	{
+		try {
+			$query = "SELECT email FROM usuarios WHERE email = ?";
+			$stmt = $this->db->prepare($query);
+			$stmt->bindParam(1, $this->email, PDO::PARAM_STR);
+			$stmt->execute();
+
+			if ($stmt->fetchColumn() != 0) {
+				return true; 
+			} else {
+				return false; //Email disponible 
+			}
+		} catch (Exception $e) {
+			die($e->getMessage());
+		}
+	}
+
+	public function usernameExists()
+	{
+		try {
+			$query = "SELECT nombre FROM usuarios WHERE nombre = ?";
+			$stmt = $this->db->prepare($query);
+			$stmt->bindParam(1, $this->nombre, PDO::PARAM_STR);
+			$stmt->execute();
+
+			if ($stmt->fetchColumn() != 0) {
+				return true; 
+			} else {
+				return false; //Usuario disponible 
+			}
+		} catch (Exception $e) {
+			die($e->getMessage());
+		}
+	}
 
 	public function getRoles()
 	{
@@ -181,13 +216,12 @@ class Usuario extends Conexion
 			}
 
 			return $datos;
-
 		} catch (Exception $e) {
 			die($e->getMessage());
 		}
 	}
 
-	public function update($idUsuario)
+	public function update()
 	{
 		try {
 			$query = "UPDATE usuarios SET nombre = ?, email = ?, idRol = ?, fcActualiza = ? WHERE idUsuario = ?";
