@@ -28,8 +28,7 @@
                         </div>
                         <button type="button" class="btn-acceder" id="btnLogin">Ingresar</button>
                     </form>
-                    <span class="error"></span>
-
+                    <div class="alert alert-danger d-none align-items-center" role="alert"></div>
                 </div>
             </div>
         </div>

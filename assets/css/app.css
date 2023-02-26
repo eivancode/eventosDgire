@@ -48,8 +48,13 @@
     text-align: center;
 }
 
-.form-error{
+label.error {
+    color: crimson;
     font-size: small;
     font-weight: 700;
-    color: red;
+}
+
+#color-error{
+    display: block;
+    margin-top: -10px;
 }
