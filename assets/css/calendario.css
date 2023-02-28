@@ -17,7 +17,7 @@ input[name=color]{
 }
 
 label.error {
-    color: red;
+    color: crimson;
     font-size: small;
 }
 
