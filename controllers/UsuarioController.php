@@ -14,7 +14,7 @@ class UsuarioController
     public function index()
     {
         $roles = $this->usuarios->getRoles();
-
+       
         require_once 'views/usuarios/index.php';
     }
 
@@ -31,11 +31,11 @@ class UsuarioController
 
     public function autenticar()
     {
-        $nombre = isset($_POST['usuario']) && !empty($_POST['usuario']) ? $_POST['usuario'] : false;
+        $username = isset($_POST['usuario']) && !empty($_POST['usuario']) ? $_POST['usuario'] : false;
         $password = isset($_POST['password']) && !empty($_POST['password']) ? $_POST['password'] : false;
+        $usuario = $this->usuarios->auth($username, $password);
 
-        if ($nombre && $password) {
-            $usuario = $this->usuarios->auth($nombre, $password);
+        if ($username && $password) {
 
             if ($usuario && password_verify($password, $usuario['password'])) {
                 $_SESSION['idUsuario'] = $usuario['idUsuario']; //Obtener los datos del usuario solicitante
@@ -50,21 +50,20 @@ class UsuarioController
                 http_response_code(400);
                 echo  json_encode(array('message' => "Usuario o contraseña incorrecto"));
             }
-        } else {
-            http_response_code(400);
-            echo  json_encode(array('message' => "Faltan campos por completar"));
         }
     }
 
     public function guardar()
     {
         $nombre = !empty($_POST['nombre']) ? $_POST['nombre'] : false;
+        $usuario = !empty($_POST['usuario']) ? $_POST['usuario'] : false;
         $email = !empty($_POST['email']) ? $_POST['email'] : false;
         $password = !empty($_POST['password']) ? $_POST['password'] : false;
         $rol = !empty($_POST['rol']) && is_numeric($_POST['rol']) ? $_POST['rol'] : false;
 
-        if ($nombre && $email && $password && $rol) {
+        if ($nombre && $usuario && $email && $password && $rol) {
             $this->usuarios->setNombre($nombre);
+            $this->usuarios->setUsuario($usuario);
             $this->usuarios->setEmail($email);
             $this->usuarios->setPassword(password_hash($password, PASSWORD_BCRYPT));
             $this->usuarios->setRol($rol);
@@ -91,17 +90,18 @@ class UsuarioController
 
     public function actualizar()
     {
-        $id = $this->usuarios->setIdUsuario($_GET['id']);
+        $idUsuario = $_GET['id'];
         $nombre = !empty($_POST['nombre']) ? $_POST['nombre'] : false;
         $email = !empty($_POST['email']) ? $_POST['email'] : false;
         $rol = !empty($_POST['rol']) && is_numeric($_POST['rol']) ? $_POST['rol'] : false;
 
         if ($nombre && $email && $rol) {
+            $this->usuarios->setIdUsuario($idUsuario);
             $this->usuarios->setNombre($nombre);
             $this->usuarios->setEmail($email);
             $this->usuarios->setRol($rol);
             $this->usuarios->setFcActualiza(date('Y-m-d H:i:s'));
-            $this->usuarios->update($id);
+            $this->usuarios->update();
             echo  json_encode(array('message' => "Usuario actualizado"));
         } else {
             http_response_code(400);
@@ -116,4 +116,28 @@ class UsuarioController
         $this->usuarios->delete($id);
         echo  json_encode(array('message' => "Usuario eliminado"));
     }
+
+    public function comprobarUsuario()
+    {
+        $usuario = !empty($_POST['usuario']) ? $_POST['usuario'] : false;
+        $this->usuarios->setUsuario($usuario);
+
+        if ($this->usuarios->usernameExists()) {
+            echo json_encode(array("El usuario ya existe"));
+        } else {
+            echo json_encode(true);
+        }
+    }
+
+    public function comprobarEmail()
+    {
+        $email = !empty($_POST['email']) ? $_POST['email'] : false;
+        $this->usuarios->setEmail($email);
+
+        if ($this->usuarios->emailExists()) {
+            echo json_encode(array("El email ya existe"));
+        } else {
+            echo json_encode(true);
+        }
+    }    
 }

@@ -4,24 +4,25 @@ $(document).ready(function () {
     var dataTable = $('#tablaUsuarios').DataTable({
 
         "ajax": {
-            "url": BASE_URL+"usuario/listar",
+            "url": BASE_URL + "usuario/listar",
             "dataSrc": ""
         },
         "columns": [
             { "data": "idUsuario" },
             { "data": "nombre" },
+            { "data": "usuario" },
             { "data": "email" },
             { "data": "rol" },
             {
-                "defaultContent": "<div class='gap-1 d-md-flex justify-content-center'><button class='btn btn-warning btn-sm' id='btnEditar'><i class='fas fa-pen' style='color:white'></i>"
-                    + "</button><button class='btn btn-danger btn-sm' id='btnBorrar'><i class='fas fa-trash'></i></button></div>"
+                "defaultContent": "<div class='gap-1 d-md-flex justify-content-center'><button class='btn btn-warning btn-sm' id='btnEditar'><span class='fas fa-pen' style='color:white'></span>"
+                    + "</button><button class='btn btn-danger btn-sm' id='btnBorrar'><span class='fas fa-trash-alt'></span></button></div>"
             }
         ],
         language: {
             "emptyTable": "No se encontraron datos",
             "lengthMenu": "Mostrar _MENU_ registros",
-            "info": "Mostrando del _START_ al _END_. Total: _TOTAL_ entradas",
-            "infoEmpty": "No hay datos param mostrar",
+            "info": "Mostrando del _START_ al _END_. Total: _TOTAL_ registros",
+            "infoEmpty": "No hay datos para mostrar",
             "search": "Buscar:",
             "paginate": {
                 "first": "Primeros",
@@ -32,47 +33,122 @@ $(document).ready(function () {
         }
     });
 
-    $('#nuevo').on('click', function () {
-        $('#userModal').modal("show");
+    $(document).ready(function formValidate() {
+
+        $('#userForm').validate({
+            rules: {
+                nombre: {
+                    required: true,
+                },
+
+                usuario: {
+                    required: true,
+                    minlength: 5,
+                    remote: {
+                        type: "POST",
+                        url: BASE_URL + "usuario/comprobarUsuario",
+                        data: {
+                            nombre: function () {
+                                return $('#usuario').val();
+                            }
+                        }
+                    }
+                },
+
+                email: {
+                    required: true,
+                    email: true,
+                    remote: {
+                        type: "POST",
+                        url: BASE_URL + "usuario/comprobarEmail",
+                        data: {
+                            email: function () {
+                                return $('#email').val();
+                            }
+                        }
+                    }
+                },
+
+                password: {
+                    required: true
+                },
+
+                rol: {
+                    required: true
+                }
+            },
+
+            messages: {
+                nombre: {
+                    required: "Ingrese un nombre", maxlength: "Ingrese menos de 60",
+                },
+
+                usuario: {
+                    required: "Ingrese un nombre de usuario", minlength:"Mínimo 5 caracteres", maxlength: "Ingrese menos de 20",
+                },
+
+                email: {
+                    required: "Ingrese un email",
+                    email: "Formato de email inválido",
+                },
+
+                password: {
+                    required: "Ingrese una contraseña",
+                },
+
+                rol: {
+                    required: "Seleccione un rol",
+                }
+            },
+
+            submitHandler: function () {
+
+                var nombre = $('#nombre').val();
+                var usuario = $('#usuario').val();
+                var email = $('#email').val();
+                var password = $('#password').val();
+                var rol = $('#rol option:selected').val();
+
+
+                $.ajax({
+                    url: BASE_URL + "usuario/guardar",
+                    type: 'POST',
+                    data: {
+                        nombre: nombre,
+                        usuario: usuario,
+                        email: email,
+                        password: password,
+                        rol: rol
+                    },
+
+                    success: function () {
+
+                        $('#userForm').trigger('reset');
+                        $('#userModal').modal('hide');
+                        dataTable.ajax.reload();
+
+                        Swal.fire(
+                            'Guardado!',
+                            'El usuario fue creado con éxito',
+                            'success'
+                        )
+                    },
+
+                    error: function () {
+
+                        Swal.fire(
+                            'Error!',
+                            'No fue posible crear el usuario',
+                            'error'
+                        )
+                    }
+                })
+            }
+        })
     });
 
-    $('#btnAgregar').on('click', function () {
-        var nombre = $('#nombre').val();
-        var email = $('#email').val();
-        var password = $('#password').val();
-        var rol = $('#rol option:selected').val();
-
-        $.ajax({
-            url: BASE_URL + "usuario/guardar",
-            type: 'POST',
-            data: {
-                nombre: nombre,
-                email: email,
-                password: password,
-                rol: rol
-            },
-
-            success: function () {
-                $('#userForm').trigger('reset');
-                $('#userModal').modal('hide');
-                dataTable.ajax.reload();
-
-                Swal.fire(
-                    'Guardado!',
-                    'El usuario fue creado con éxito',
-                    'success'
-                )
-            },
-
-            error: function () {
-
-                Swal.fire(
-                    'Error!',
-                    'No fue posible crear el usuario',
-                    'error'
-                )
-            }
-        });
+    $('#nuevo').on('click', function () {
+        $('#userModal').modal("show");
     });
 
     $(document).on('click', '#btnEditar', function () {
@@ -80,7 +156,7 @@ $(document).ready(function () {
         $('#id').val(id);
         $('#editModal').modal("show");
 
-        $.get(BASE_URL+"usuario/editar&id=" + id, function (data) {
+        $.get(BASE_URL + "usuario/editar&id=" + id, function (data) {
             data = JSON.parse(data);
             $('#editNombre').val(data[0].nombre);
             $('#editEmail').val(data[0].email);
@@ -116,7 +192,6 @@ $(document).ready(function () {
             },
 
             error: function () {
-
                 Swal.fire(
                     'Error!',
                     'No fue posible actualizar el usuario',
@@ -144,7 +219,7 @@ $(document).ready(function () {
                 $.ajax({
                     url: BASE_URL + "usuario/borrar&id=" + id,
                     type: "POST",
-                    
+
                     success: function (result) {
 
                         dataTable.ajax.reload();
