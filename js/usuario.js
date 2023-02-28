@@ -159,6 +159,7 @@ $(document).ready(function () {
         $.get(BASE_URL + "usuario/editar&id=" + id, function (data) {
             data = JSON.parse(data);
             $('#editNombre').val(data[0].nombre);
+            $('#editUsuario').val(data[0].usuario);
             $('#editEmail').val(data[0].email);
             $('#editRol').val(data[0].idRol);
         })
