@@ -106,6 +106,12 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
+                            <label for="usuario" class="col-sm-2 col-form-label">Usuario:</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="usuario" id="editUsuario">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
                             <label for="email" class="col-sm-2 col-form-label">Email:</label>
                             <div class="col-sm-10">
                                 <input type="email" class="form-control" name="email" id="editEmail">

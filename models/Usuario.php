@@ -220,7 +220,7 @@ class Usuario extends Conexion
 	public function edit($idUsuario)
 	{
 		try {
-			$query = "SELECT idUsuario, nombre, email, idRol FROM usuarios WHERE idUsuario = ?";
+			$query = "SELECT idUsuario, nombre, usuario, email, idRol FROM usuarios WHERE idUsuario = ?";
 			$stmt = $this->db->prepare($query);
 			$stmt->bindParam(1, $idUsuario, PDO::PARAM_INT);
 			$stmt->execute();
